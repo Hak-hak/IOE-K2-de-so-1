@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOE K2 - Đề số 1 - Luyện thi tiếng Anh</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel (để biên dịch JSX ngay trên trình duyệt) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+      body { font-family: 'Nunito', sans-serif; }
+      
+      /* Animations */
+      @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+      .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+      
+      @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: #f1f5f9; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "clsx": "https://aistudiocdn.com/clsx@^2.1.1",
+    "tailwind-merge": "https://aistudiocdn.com/tailwind-merge@^3.4.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0"
+  }
+}
+</script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- 1. ICONS (Inline SVG components to replace lucide-react dependency) ---
+        const Icons = {
+            Volume2: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>,
+            Play: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+            Pause: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            GraduationCap: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+            Trophy: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
+            CheckCircle: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            XCircle: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
+            RefreshCw: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>,
+            Eye: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+            RotateCcw: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>,
+            CheckCircle2: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>,
+            Lightbulb: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>,
+            HelpCircle: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>,
+            ArrowLeft: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>,
+            ArrowRight: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
+            CheckSquare: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>,
+            Flag: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>,
+            LayoutGrid: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>,
+            X: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 18 12"/></svg>
+        };
+
+        // --- 2. CONSTANTS & DATA ---
+        const QuestionType = {
+            MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+            FILL_IN_BLANK: 'FILL_IN_BLANK',
+            REARRANGE: 'REARRANGE'
+        };
+
+        const GameState = {
+            START: 'START',
+            PLAYING: 'PLAYING',
+            FINISHED: 'FINISHED'
+        };
+
+        const cleanUrl = (url) => {
+            if (!url) return undefined;
+            return url.trim()
+                .replace(/\s+/g, '')
+                .replace(/res\.ioe\.vnzedu/, 'res.ioe.vn/edu')
+                .replace(/res\.ioe\.vii/, 'res.ioe.vn')
+                .replace(/res\.ioe\.vm/, 'res.ioe.vn')
+                .replace(/Audio\s*mp3/i, 'Audio.mp3')
+                .replace(/ImageExam\s*(\d)/, 'ImageExam/$1')
+                .replace(/Olympic\s*ExamData/, 'OlympicExamData')
+                .replace(/EOlympic\s*ExamData/, 'EOlympic/ExamData')
+                .replace(/'/g, '')
+                .replace(/Audio-mp3/i, 'Audio.mp3');
+        };
+
+        // DỮ LIỆU CÂU HỎI LỚP 2
+        const QUIZ_DATA = [
+            // --- PART 1: GREETINGS & INTRO (1-10) ---
+            { id: 1, type: QuestionType.FILL_IN_BLANK, questionText: "H_llo, Nam.", correctAnswer: "e", explanation: "Hello: Xin chào." },
+            { id: 2, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["Nice", "to", "meet", "you."], correctAnswer: "Nice to meet you.", explanation: "Rất vui được gặp bạn." },
+            { id: 3, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["is", "your", "What", "name?"], correctAnswer: "What is your name?", explanation: "Tên của bạn là gì?" },
+            { id: 4, type: QuestionType.FILL_IN_BLANK, questionText: "My n_me is Peter.", correctAnswer: "a", explanation: "Name: Tên." },
+            { id: 5, type: QuestionType.MULTIPLE_CHOICE, questionText: "How ___ you? - I'm fine.", options: ["is", "am", "are", "it"], correctAnswer: "are", explanation: "How are you: Bạn có khỏe không?" },
+            { id: 6, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["am", "fine,", "thanks.", "I"], correctAnswer: "I am fine, thanks.", explanation: "Tôi khỏe, cảm ơn." },
+            { id: 7, type: QuestionType.FILL_IN_BLANK, questionText: "G_odbye, teacher.", correctAnswer: "o", explanation: "Goodbye: Tạm biệt." },
+            { id: 8, type: QuestionType.MULTIPLE_CHOICE, questionText: "See you ___.", options: ["later", "late", "letter", "let"], correctAnswer: "later", explanation: "See you later: Hẹn gặp lại sau." },
+            { id: 9, type: QuestionType.FILL_IN_BLANK, questionText: "Good mo_ning.", correctAnswer: "r", explanation: "Morning: Buổi sáng." },
+            { id: 10, type: QuestionType.MULTIPLE_CHOICE, questionText: "___, Mai. - Bye, Nam.", options: ["Bye", "Good", "Nice", "Meet"], correctAnswer: "Bye", explanation: "Bye: Tạm biệt." },
+
+            // --- PART 2: NUMBERS 1-10 (11-20) ---
+            { id: 11, type: QuestionType.FILL_IN_BLANK, questionText: "O_e", correctAnswer: "n", explanation: "One: Số 1." },
+            { id: 12, type: QuestionType.MULTIPLE_CHOICE, questionText: "What number is it?", options: ["Two", "Ten", "Three", "Tea"], correctAnswer: "Two", explanation: "Two: Số 2." },
+            { id: 13, type: QuestionType.FILL_IN_BLANK, questionText: "Th_ee", correctAnswer: "r", explanation: "Three: Số 3." },
+            { id: 14, type: QuestionType.MULTIPLE_CHOICE, questionText: "Choose number 4:", options: ["Four", "Five", "Six", "One"], correctAnswer: "Four", explanation: "Four: Số 4." },
+            { id: 15, type: QuestionType.FILL_IN_BLANK, questionText: "F_ve", correctAnswer: "i", explanation: "Five: Số 5." },
+            { id: 16, type: QuestionType.MULTIPLE_CHOICE, questionText: "What comes after Five?", options: ["Six", "Seven", "Four", "Two"], correctAnswer: "Six", explanation: "Sau số 5 là số 6 (Six)." },
+            { id: 17, type: QuestionType.FILL_IN_BLANK, questionText: "Se_en", correctAnswer: "v", explanation: "Seven: Số 7." },
+            { id: 18, type: QuestionType.MULTIPLE_CHOICE, questionText: "Eight is number ___.", options: ["8", "9", "7", "10"], correctAnswer: "8", explanation: "Eight: Số 8." },
+            { id: 19, type: QuestionType.FILL_IN_BLANK, questionText: "N_ne", correctAnswer: "i", explanation: "Nine: Số 9." },
+            { id: 20, type: QuestionType.MULTIPLE_CHOICE, questionText: "___ fingers.", options: ["Ten", "Pen", "Hen", "Men"], correctAnswer: "Ten", explanation: "Ten: Số 10." },
+
+            // --- PART 3: COLORS (21-30) ---
+            { id: 21, type: QuestionType.FILL_IN_BLANK, questionText: "It is r_d.", correctAnswer: "e", explanation: "Red: Màu đỏ." },
+            { id: 22, type: QuestionType.MULTIPLE_CHOICE, questionText: "The sky is ___.", options: ["blue", "red", "green", "yellow"], correctAnswer: "blue", explanation: "Blue: Màu xanh dương (Bầu trời thường màu xanh)." },
+            { id: 23, type: QuestionType.FILL_IN_BLANK, questionText: "Gr_en", correctAnswer: "e", explanation: "Green: Màu xanh lá cây." },
+            { id: 24, type: QuestionType.MULTIPLE_CHOICE, questionText: "The sun is ___.", options: ["yellow", "purple", "black", "blue"], correctAnswer: "yellow", explanation: "Yellow: Màu vàng." },
+            { id: 25, type: QuestionType.FILL_IN_BLANK, questionText: "Pin_", correctAnswer: "k", explanation: "Pink: Màu hồng." },
+            { id: 26, type: QuestionType.MULTIPLE_CHOICE, questionText: "My hair is ___.", options: ["black", "sack", "back", "lack"], correctAnswer: "black", explanation: "Black: Màu đen." },
+            { id: 27, type: QuestionType.FILL_IN_BLANK, questionText: "Wh_te", correctAnswer: "i", explanation: "White: Màu trắng." },
+            { id: 28, type: QuestionType.MULTIPLE_CHOICE, questionText: "The bear is ___.", options: ["brown", "town", "down", "clown"], correctAnswer: "brown", explanation: "Brown: Màu nâu." },
+            { id: 29, type: QuestionType.FILL_IN_BLANK, questionText: "Oran_e", correctAnswer: "g", explanation: "Orange: Màu cam." },
+            { id: 30, type: QuestionType.MULTIPLE_CHOICE, questionText: "Grapes are ___.", options: ["purple", "pink", "white", "orange"], correctAnswer: "purple", explanation: "Purple: Màu tím." },
+
+            // --- PART 4: SCHOOL THINGS (31-40) ---
+            { id: 31, type: QuestionType.FILL_IN_BLANK, questionText: "This is a p_n.", correctAnswer: "e", explanation: "Pen: Cái bút mực." },
+            { id: 32, type: QuestionType.MULTIPLE_CHOICE, questionText: "I have a ___ (thước kẻ).", options: ["ruler", "rubber", "robot", "red"], correctAnswer: "ruler", explanation: "Ruler: Thước kẻ." },
+            { id: 33, type: QuestionType.FILL_IN_BLANK, questionText: "B_ok", correctAnswer: "o", explanation: "Book: Quyển sách." },
+            { id: 34, type: QuestionType.MULTIPLE_CHOICE, questionText: "Open your ___.", options: ["bag", "big", "bug", "bog"], correctAnswer: "bag", explanation: "Bag: Cặp sách." },
+            { id: 35, type: QuestionType.FILL_IN_BLANK, questionText: "Pen_il", correctAnswer: "c", explanation: "Pencil: Bút chì." },
+            { id: 36, type: QuestionType.MULTIPLE_CHOICE, questionText: "It is an ___ (cục tẩy).", options: ["eraser", "ear", "eight", "eye"], correctAnswer: "eraser", explanation: "Eraser: Cục tẩy." },
+            { id: 37, type: QuestionType.FILL_IN_BLANK, questionText: "D_sk", correctAnswer: "e", explanation: "Desk: Bàn học." },
+            { id: 38, type: QuestionType.MULTIPLE_CHOICE, questionText: "Look at the ___.", options: ["board", "boat", "bird", "bed"], correctAnswer: "board", explanation: "Board: Cái bảng." },
+            { id: 39, type: QuestionType.FILL_IN_BLANK, questionText: "Tea_her", correctAnswer: "c", explanation: "Teacher: Giáo viên." },
+            { id: 40, type: QuestionType.MULTIPLE_CHOICE, questionText: "I am a ___.", options: ["pupil", "purple", "pencil", "people"], correctAnswer: "pupil", explanation: "Pupil: Học sinh." },
+
+            // --- PART 5: FAMILY (41-50) ---
+            { id: 41, type: QuestionType.FILL_IN_BLANK, questionText: "Fa_her", correctAnswer: "t", explanation: "Father: Bố." },
+            { id: 42, type: QuestionType.MULTIPLE_CHOICE, questionText: "She is my ___ (mẹ).", options: ["mother", "brother", "father", "sister"], correctAnswer: "mother", explanation: "Mother: Mẹ." },
+            { id: 43, type: QuestionType.FILL_IN_BLANK, questionText: "Bro_her", correctAnswer: "t", explanation: "Brother: Anh/em trai." },
+            { id: 44, type: QuestionType.MULTIPLE_CHOICE, questionText: "He is my ___.", options: ["dad", "mom", "sister", "grandma"], correctAnswer: "dad", explanation: "Dad: Bố (cách gọi thân mật)." },
+            { id: 45, type: QuestionType.FILL_IN_BLANK, questionText: "Sist_r", correctAnswer: "e", explanation: "Sister: Chị/em gái." },
+            { id: 46, type: QuestionType.MULTIPLE_CHOICE, questionText: "This is my ___ (bà).", options: ["grandmother", "grandfather", "father", "brother"], correctAnswer: "grandmother", explanation: "Grandmother: Bà." },
+            { id: 47, type: QuestionType.FILL_IN_BLANK, questionText: "Grand_a", correctAnswer: "p", explanation: "Grandpa: Ông (thân mật)." },
+            { id: 48, type: QuestionType.MULTIPLE_CHOICE, questionText: "I love my ___.", options: ["family", "farm", "fish", "four"], correctAnswer: "family", explanation: "Family: Gia đình." },
+            { id: 49, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["my", "This", "mom.", "is"], correctAnswer: "This is my mom.", explanation: "Đây là mẹ tôi." },
+            { id: 50, type: QuestionType.MULTIPLE_CHOICE, questionText: "Who is he? - He is my ___.", options: ["uncle", "aunt", "sister", "mother"], correctAnswer: "uncle", explanation: "Uncle: Chú/Bác (nam giới)." },
+
+            // --- PART 6: BODY PARTS (51-60) ---
+            { id: 51, type: QuestionType.FILL_IN_BLANK, questionText: "H_ad", correctAnswer: "e", explanation: "Head: Cái đầu." },
+            { id: 52, type: QuestionType.MULTIPLE_CHOICE, questionText: "Touch your ___ (mắt).", options: ["eye", "ear", "arm", "leg"], correctAnswer: "eye", explanation: "Eye: Mắt." },
+            { id: 53, type: QuestionType.FILL_IN_BLANK, questionText: "No_e", correctAnswer: "s", explanation: "Nose: Mũi." },
+            { id: 54, type: QuestionType.MULTIPLE_CHOICE, questionText: "Open your ___.", options: ["mouth", "mouse", "month", "moon"], correctAnswer: "mouth", explanation: "Mouth: Miệng." },
+            { id: 55, type: QuestionType.FILL_IN_BLANK, questionText: "Ea_", correctAnswer: "r", explanation: "Ear: Tai." },
+            { id: 56, type: QuestionType.MULTIPLE_CHOICE, questionText: "Clap your ___.", options: ["hands", "head", "hair", "hat"], correctAnswer: "hands", explanation: "Hands: Bàn tay." },
+            { id: 57, type: QuestionType.FILL_IN_BLANK, questionText: "A_m", correctAnswer: "r", explanation: "Arm: Cánh tay." },
+            { id: 58, type: QuestionType.MULTIPLE_CHOICE, questionText: "I have two ___.", options: ["legs", "lemon", "lamp", "long"], correctAnswer: "legs", explanation: "Legs: Chân." },
+            { id: 59, type: QuestionType.FILL_IN_BLANK, questionText: "F_ot", correctAnswer: "o", explanation: "Foot: Bàn chân." },
+            { id: 60, type: QuestionType.MULTIPLE_CHOICE, questionText: "One ___.", options: ["finger", "face", "five", "fish"], correctAnswer: "finger", explanation: "Finger: Ngón tay." },
+
+            // --- PART 7: ANIMALS (61-70) ---
+            { id: 61, type: QuestionType.FILL_IN_BLANK, questionText: "C_t", correctAnswer: "a", explanation: "Cat: Con mèo." },
+            { id: 62, type: QuestionType.MULTIPLE_CHOICE, questionText: "I have a ___ (con chó).", options: ["dog", "doll", "duck", "desk"], correctAnswer: "dog", explanation: "Dog: Con chó." },
+            { id: 63, type: QuestionType.FILL_IN_BLANK, questionText: "Bi_d", correctAnswer: "r", explanation: "Bird: Con chim." },
+            { id: 64, type: QuestionType.MULTIPLE_CHOICE, questionText: "The ___ swims.", options: ["fish", "fan", "five", "four"], correctAnswer: "fish", explanation: "Fish: Con cá." },
+            { id: 65, type: QuestionType.FILL_IN_BLANK, questionText: "P_g", correctAnswer: "i", explanation: "Pig: Con lợn." },
+            { id: 66, type: QuestionType.MULTIPLE_CHOICE, questionText: "It is a ___ (con vịt).", options: ["duck", "dog", "desk", "dad"], correctAnswer: "duck", explanation: "Duck: Con vịt." },
+            { id: 67, type: QuestionType.FILL_IN_BLANK, questionText: "Chi_ken", correctAnswer: "c", explanation: "Chicken: Con gà." },
+            { id: 68, type: QuestionType.MULTIPLE_CHOICE, questionText: "The ___ likes bananas.", options: ["monkey", "mouse", "moon", "man"], correctAnswer: "monkey", explanation: "Monkey: Con khỉ." },
+            { id: 69, type: QuestionType.FILL_IN_BLANK, questionText: "Ti_er", correctAnswer: "g", explanation: "Tiger: Con hổ." },
+            { id: 70, type: QuestionType.MULTIPLE_CHOICE, questionText: "The ___ says 'Moo'.", options: ["cow", "cat", "car", "cap"], correctAnswer: "cow", explanation: "Cow: Con bò." },
+
+            // --- PART 8: TOYS (71-80) ---
+            { id: 71, type: QuestionType.FILL_IN_BLANK, questionText: "Ba_l", correctAnswer: "l", explanation: "Ball: Quả bóng." },
+            { id: 72, type: QuestionType.MULTIPLE_CHOICE, questionText: "This is my ___ (búp bê).", options: ["doll", "dog", "door", "desk"], correctAnswer: "doll", explanation: "Doll: Búp bê." },
+            { id: 73, type: QuestionType.FILL_IN_BLANK, questionText: "C_r", correctAnswer: "a", explanation: "Car: Ô tô đồ chơi." },
+            { id: 74, type: QuestionType.MULTIPLE_CHOICE, questionText: "Fly a ___.", options: ["kite", "kit", "key", "king"], correctAnswer: "kite", explanation: "Kite: Cái diều." },
+            { id: 75, type: QuestionType.FILL_IN_BLANK, questionText: "B_ke", correctAnswer: "i", explanation: "Bike: Xe đạp." },
+            { id: 76, type: QuestionType.MULTIPLE_CHOICE, questionText: "I have a ___ (người máy).", options: ["robot", "rabbit", "ruler", "red"], correctAnswer: "robot", explanation: "Robot: Người máy." },
+            { id: 77, type: QuestionType.FILL_IN_BLANK, questionText: "Tra_n", correctAnswer: "i", explanation: "Train: Tàu hỏa." },
+            { id: 78, type: QuestionType.MULTIPLE_CHOICE, questionText: "Look at the ___.", options: ["plane", "plan", "plate", "play"], correctAnswer: "plane", explanation: "Plane: Máy bay." },
+            { id: 79, type: QuestionType.FILL_IN_BLANK, questionText: "Boa_", correctAnswer: "t", explanation: "Boat: Thuyền." },
+            { id: 80, type: QuestionType.MULTIPLE_CHOICE, questionText: "I like my ___ bear.", options: ["teddy", "ready", "tidy", "ten"], correctAnswer: "teddy", explanation: "Teddy bear: Gấu bông." },
+
+            // --- PART 9: SENTENCE ARRANGEMENT (81-90) ---
+            { id: 81, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["is", "What", "this?"], correctAnswer: "What is this?", explanation: "Đây là cái gì?" },
+            { id: 82, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["a", "It", "pen.", "is"], correctAnswer: "It is a pen.", explanation: "Nó là một cái bút." },
+            { id: 83, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["a", "Is", "it", "cat?"], correctAnswer: "Is it a cat?", explanation: "Nó có phải là con mèo không?" },
+            { id: 84, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["it", "Yes,", "is."], correctAnswer: "Yes, it is.", explanation: "Vâng, đúng vậy." },
+            { id: 85, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["isn't.", "No,", "it"], correctAnswer: "No, it isn't.", explanation: "Không, không phải." },
+            { id: 86, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["like", "dogs.", "I"], correctAnswer: "I like dogs.", explanation: "Tôi thích chó." },
+            { id: 87, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["have", "I", "ball.", "a"], correctAnswer: "I have a ball.", explanation: "Tôi có một quả bóng." },
+            { id: 88, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["nose.", "Touch", "your"], correctAnswer: "Touch your nose.", explanation: "Chạm vào mũi của bạn." },
+            { id: 89, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["your", "Open", "book."], correctAnswer: "Open your book.", explanation: "Mở sách ra." },
+            { id: 90, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["up.", "Stand"], correctAnswer: "Stand up.", explanation: "Đứng dậy." },
+
+            // --- PART 10: MIXED REVIEW (91-100) ---
+            { id: 91, type: QuestionType.MULTIPLE_CHOICE, questionText: "Choose the odd one out (Chọn từ khác loại):", options: ["Red", "Blue", "Cat", "Green"], correctAnswer: "Cat", explanation: "Cat là con vật, còn lại là màu sắc." },
+            { id: 92, type: QuestionType.MULTIPLE_CHOICE, questionText: "Choose the odd one out:", options: ["One", "Two", "Ten", "Ball"], correctAnswer: "Ball", explanation: "Ball là đồ chơi, còn lại là số đếm." },
+            { id: 93, type: QuestionType.FILL_IN_BLANK, questionText: "Sch_ol", correctAnswer: "o", explanation: "School: Trường học." },
+            { id: 94, type: QuestionType.FILL_IN_BLANK, questionText: "Fri_nd", correctAnswer: "e", explanation: "Friend: Bạn bè." },
+            { id: 95, type: QuestionType.MULTIPLE_CHOICE, questionText: "One + One = ___.", options: ["Two", "Three", "Four", "Five"], correctAnswer: "Two", explanation: "1 + 1 = 2 (Two)." },
+            { id: 96, type: QuestionType.FILL_IN_BLANK, questionText: "Hap_y", correctAnswer: "p", explanation: "Happy: Vui vẻ." },
+            { id: 97, type: QuestionType.MULTIPLE_CHOICE, questionText: "Apple is ___.", options: ["red", "blue", "black", "white"], correctAnswer: "red", explanation: "Red: Quả táo thường màu đỏ." },
+            { id: 98, type: QuestionType.FILL_IN_BLANK, questionText: "S_d", correctAnswer: "a", explanation: "Sad: Buồn bã." },
+            { id: 99, type: QuestionType.FILL_IN_BLANK, questionText: "Tha_k you.", correctAnswer: "n", explanation: "Thank you: Cảm ơn." },
+            { id: 100, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["soon.", "See", "you"], correctAnswer: "See you soon.", explanation: "Hẹn gặp lại sớm." }
+        ];
+
+        // --- 3. HELPER UTILS ---
+        function cn(...classes) {
+            return classes.filter(Boolean).join(' ');
+        }
+
+        // --- 4. COMPONENTS ---
+
+        const Button = ({ variant = 'primary', size = 'md', className, children, ...props }) => {
+            const baseStyles = "inline-flex items-center justify-center font-bold transition-all duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transform active:scale-95";
+            const variants = {
+                primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30 focus:ring-blue-500 border border-transparent",
+                secondary: "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30 focus:ring-emerald-500 border border-transparent",
+                danger: "bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/30 focus:ring-rose-500 border border-transparent",
+                outline: "bg-white border-2 border-slate-300 text-slate-600 hover:border-blue-500 hover:text-blue-600 shadow-slate-200/50"
+            };
+            const sizes = {
+                sm: "px-4 py-1.5 text-sm",
+                md: "px-6 py-3 text-base",
+                lg: "px-8 py-4 text-lg"
+            };
+            return (
+                <button className={cn(baseStyles, variants[variant], sizes[size], className)} {...props}>
+                    {children}
+                </button>
+            );
+        };
+
+        const AudioPlayer = ({ src }) => {
+            const audioRef = useRef(null);
+            const [isPlaying, setIsPlaying] = useState(false);
+
+            const togglePlay = () => {
+                if (audioRef.current) {
+                    if (isPlaying) audioRef.current.pause();
+                    else audioRef.current.play();
+                    setIsPlaying(!isPlaying);
+                }
+            };
+
+            return (
+                <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow w-full max-w-md">
+                    <button type="button" onClick={togglePlay} className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-blue-200">
+                        {isPlaying ? <Icons.Pause className="w-5 h-5" /> : <Icons.Play className="w-5 h-5 ml-1" />}
+                    </button>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-0.5">Câu hỏi Audio</span>
+                        <span className="text-sm text-slate-500 flex items-center gap-1"><Icons.Volume2 className="w-4 h-4" /> Nhấn để nghe</span>
+                    </div>
+                    <audio ref={audioRef} src={src} onEnded={() => setIsPlaying(false)} className="hidden" />
+                </div>
+            );
+        };
+
+        const StartScreen = ({ onStart }) => {
+            const [name, setName] = useState('');
+            const handleSubmit = (e) => { e.preventDefault(); if (name.trim()) onStart(name.trim()); };
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-md w-full text-center transform transition-all duration-500 hover:scale-105">
+                        <div className="mb-8 flex flex-col items-center">
+                            <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6">
+                                <Icons.GraduationCap className="w-10 h-10" />
+                            </div>
+                            <h1 className="text-3xl font-extrabold text-slate-800 mb-2">IOE K2 - Đề số 1</h1>
+                            <p className="text-slate-500">Luyện thi tiếng Anh IOE Lớp 2 cùng AI Master</p>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="text-left space-y-2">
+                                <label className="block text-sm font-bold text-slate-700 ml-1">Họ và tên</label>
+                                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nhập tên của bạn..." className="w-full px-6 py-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all text-lg font-medium placeholder:text-slate-300" required />
+                            </div>
+                            <Button type="submit" className="w-full shadow-xl shadow-blue-500/40" size="lg" disabled={!name.trim()}>Bắt đầu làm bài</Button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const ResultScreen = ({ userName, userAnswers, onRetryAll, onRetryWrong, onReviewWrong }) => {
+            const correct = userAnswers.filter(a => a.isCorrect).length;
+            const total = userAnswers.length;
+            const incorrect = total - correct;
+            const percentage = total === 0 ? 0 : Math.round((correct / total) * 100);
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 animate-fade-in">
+                    <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full text-center border border-slate-100">
+                        <div className="inline-flex items-center justify-center w-24 h-24 bg-yellow-100 rounded-full mb-8 text-yellow-500 ring-8 ring-yellow-50">
+                            <Icons.Trophy className="w-12 h-12" />
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2">Hoàn thành bài thi!</h2>
+                        <p className="text-lg text-slate-600 mb-8">Làm tốt lắm, <span className="font-bold text-blue-600">{userName}</span></p>
+                        <div className="relative mb-10 inline-block">
+                            <div className="text-7xl font-black text-blue-600 tracking-tight">{percentage}%</div>
+                            <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">Độ chính xác</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mb-10">
+                            <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
+                                <div className="flex items-center justify-center gap-2 mb-1"><Icons.CheckCircle className="w-5 h-5 text-green-500" /><span className="text-green-700 font-bold text-lg">Đúng</span></div>
+                                <div className="text-3xl font-black text-green-600">{correct}</div>
+                            </div>
+                            <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
+                                <div className="flex items-center justify-center gap-2 mb-1"><Icons.XCircle className="w-5 h-5 text-red-500" /><span className="text-red-700 font-bold text-lg">Sai</span></div>
+                                <div className="text-3xl font-black text-red-600">{incorrect}</div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <Button onClick={onRetryAll} size="md" variant="primary" className="shadow-lg shadow-blue-500/20"><Icons.RefreshCw className="w-5 h-5 mr-2" /> Chơi lại từ đầu</Button>
+                            {incorrect > 0 && (
+                                <>
+                                    <Button onClick={onRetryWrong} size="md" variant="secondary" className="shadow-lg shadow-emerald-500/20"><Icons.RotateCcw className="w-5 h-5 mr-2" /> Làm lại câu sai</Button>
+                                    <Button onClick={onReviewWrong} size="md" variant="outline" className="shadow-lg shadow-slate-200/50"><Icons.Eye className="w-5 h-5 mr-2" /> Xem lại câu sai</Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuestionCard = ({ question, onAnswer, isAnswered, userAnswer, isReviewMode }) => {
+            const [inputVal, setInputVal] = useState('');
+            const [selectedParts, setSelectedParts] = useState([]);
+            const [showHint, setShowHint] = useState(false);
+
+            useEffect(() => { setInputVal(''); setSelectedParts([]); setShowHint(false); }, [question.id]);
+
+            const normalize = (str) => str ? str.replace(/[.,!?;:'"]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() : "";
+            const isCorrect = () => userAnswer && normalize(userAnswer) === normalize(question.correctAnswer);
+
+            const handleMCSelect = (opt) => !isAnswered && onAnswer(opt);
+            const handleInputSubmit = (e) => { e.preventDefault(); if (!isAnswered && inputVal.trim()) onAnswer(inputVal.trim()); };
+            const handlePartClick = (part) => { if (!isAnswered) setSelectedParts(prev => prev.includes(part) ? prev.filter(p => p !== part) : [...prev, part]); };
+            const handleRearrangeSubmit = () => !isAnswered && selectedParts.length > 0 && onAnswer(selectedParts.join(' '));
+
+            const getQuestionTypeLabel = (type) => {
+                switch (type) {
+                    case QuestionType.MULTIPLE_CHOICE: return 'Trắc nghiệm';
+                    case QuestionType.FILL_IN_BLANK: return 'Điền từ';
+                    case QuestionType.REARRANGE: return 'Sắp xếp câu';
+                    default: return type;
+                }
+            };
+
+            return (
+                <div className="w-full max-w-4xl mx-auto mb-8 animate-fade-in">
+                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 ring-1 ring-slate-100">
+                        <div className="bg-slate-50/80 backdrop-blur px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                            <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-extrabold uppercase tracking-wide"><Icons.HelpCircle className="w-3 h-3 mr-1" />{getQuestionTypeLabel(question.type)}</span>
+                            <span className="text-xs font-bold text-slate-400">ID: {question.id}</span>
+                        </div>
+                        <div className="p-6 sm:p-10">
+                            <div className="mb-6 space-y-6">
+                                {question.imageUrl && <div className="flex justify-center bg-slate-50 rounded-2xl p-4 border border-slate-100"><img src={question.imageUrl} className="max-h-72 rounded-lg shadow-sm object-contain" onError={(e) => e.target.style.display = 'none'} /></div>}
+                                {question.audioUrl && <div className="flex justify-center"><AudioPlayer src={question.audioUrl} /></div>}
+                            </div>
+                            <div className="mb-8">
+                                <div className="flex justify-between items-start gap-4">
+                                    <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed">{question.questionText}</h2>
+                                    {!isAnswered && (
+                                        <button onClick={() => setShowHint(!showHint)} className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all shadow-sm ${showHint ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400 ring-offset-1' : 'bg-white border border-slate-200 text-slate-500 hover:text-yellow-600 hover:border-yellow-300'}`}>
+                                            <Icons.Lightbulb className={`w-4 h-4 ${showHint ? 'fill-yellow-500' : ''}`} /><span className="hidden sm:inline">{showHint ? 'Ẩn gợi ý' : 'Gợi ý'}</span>
+                                        </button>
+                                    )}
+                                </div>
+                                {showHint && !isAnswered && (
+                                    <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-slate-700 animate-fade-in relative overflow-hidden shadow-sm">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+                                        <div className="flex gap-3"><div className="shrink-0 p-2 bg-yellow-100 rounded-lg text-yellow-600 h-fit"><Icons.Lightbulb className="w-5 h-5" /></div><div><p className="font-bold text-yellow-800 text-sm uppercase tracking-wide mb-1">Gợi ý:</p><p className="text-slate-800 leading-relaxed font-medium">{question.explanation}</p></div></div>
+                                    </div>
+                                )}
+                            </div>
+                            {question.type === QuestionType.MULTIPLE_CHOICE && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {question.options?.map((opt, idx) => {
+                                        let buttonStyle = "bg-white hover:border-blue-400 border-slate-200 text-slate-700";
+                                        if (isAnswered) {
+                                            if (opt === question.correctAnswer) buttonStyle = "bg-green-100 border-green-500 text-green-800 ring-1 ring-green-500";
+                                            else if (opt === userAnswer) buttonStyle = "bg-red-100 border-red-500 text-red-800 ring-1 ring-red-500";
+                                            else buttonStyle = "bg-slate-50 border-slate-200 text-slate-400 opacity-50";
+                                        }
+                                        return <button key={idx} onClick={() => handleMCSelect(opt)} disabled={isAnswered} className={`w-full p-4 rounded-xl text-left border-2 transition-all duration-200 font-medium flex items-center ${buttonStyle}`}><span className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 font-bold mr-3 text-sm shrink-0">{String.fromCharCode(65 + idx)}</span>{opt}</button>;
+                                    })}
+                                </div>
+                            )}
+                            {question.type === QuestionType.FILL_IN_BLANK && (
+                                <form onSubmit={handleInputSubmit} className="flex flex-col sm:flex-row gap-4">
+                                    <input type="text" value={isAnswered && userAnswer ? userAnswer : inputVal} onChange={(e) => setInputVal(e.target.value)} disabled={isAnswered} className={`flex-1 p-4 rounded-xl border-2 outline-none transition-all font-medium text-lg ${isAnswered ? (isCorrect() ? 'border-green-500 bg-green-50 text-green-900' : 'border-red-500 bg-red-50 text-red-900') : 'border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100'}`} placeholder="Nhập câu trả lời..." />
+                                    {!isAnswered && <Button type="submit" className="whitespace-nowrap">Trả lời</Button>}
+                                </form>
+                            )}
+                            {question.type === QuestionType.REARRANGE && (
+                                <div className="space-y-8">
+                                    <div className="flex flex-wrap gap-3 justify-center">
+                                        {question.rearrangeParts?.map((part, idx) => (
+                                            <button key={idx} onClick={() => handlePartClick(part)} disabled={isAnswered || selectedParts.includes(part)} className={`px-4 py-2 rounded-lg font-semibold border-b-4 transition-all active:border-b-0 active:translate-y-1 ${selectedParts.includes(part) ? 'opacity-30 bg-slate-100 border-slate-200 cursor-not-allowed' : 'bg-white border-slate-200 shadow-sm hover:border-blue-400 hover:text-blue-600 text-slate-600'}`}>{part}</button>
+                                        ))}
+                                    </div>
+                                    <div className={`min-h-[80px] p-6 rounded-xl border-2 border-dashed flex flex-wrap gap-2 items-center justify-center transition-colors ${isAnswered ? (isCorrect() ? 'border-green-500 bg-green-50/50' : 'border-red-500 bg-red-50/50') : 'border-slate-300 bg-slate-50'}`}>
+                                        {selectedParts.length === 0 && !isAnswered && <span className="text-slate-400 text-sm font-medium">Nhấn vào các từ bên trên để sắp xếp</span>}
+                                        {selectedParts.map((part, idx) => <button key={idx} onClick={() => handlePartClick(part)} disabled={isAnswered} className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-red-500 transition-colors">{part}</button>)}
+                                    </div>
+                                    {!isAnswered && <div className="flex justify-end"><Button onClick={handleRearrangeSubmit} disabled={selectedParts.length === 0}>Xác nhận</Button></div>}
+                                </div>
+                            )}
+                            {isAnswered && (
+                                <div className={`mt-10 p-6 rounded-2xl border animate-slide-up ${isCorrect() ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                    <div className="flex items-start gap-4">
+                                        <div className={`p-2 rounded-full shrink-0 ${isCorrect() ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>{isCorrect() ? <Icons.CheckCircle2 className="w-6 h-6" /> : <Icons.XCircle className="w-6 h-6" />}</div>
+                                        <div className="flex-1">
+                                            <h3 className={`font-bold text-lg mb-1 ${isCorrect() ? 'text-green-800' : 'text-red-800'}`}>{isCorrect() ? 'Chính xác!' : 'Chưa chính xác'}</h3>
+                                            {!isCorrect() && <div className="mb-3 text-red-700">Đáp án đúng: <span className="font-bold bg-white px-2 py-0.5 rounded border border-red-200 ml-1">{question.correctAnswer}</span></div>}
+                                            <div className="text-slate-700 bg-white/80 p-4 rounded-xl border border-slate-200/50 mt-3 shadow-sm">
+                                                <div className="flex items-center gap-2 mb-2 text-blue-600 border-b border-blue-100 pb-2"><Icons.Lightbulb className="w-4 h-4" /><span className="font-bold text-sm uppercase tracking-wider">Giải thích chi tiết</span></div>
+                                                {question.explanation}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [gameState, setGameState] = useState(GameState.START);
+            const [userName, setUserName] = useState('');
+            const [activeQuestions, setActiveQuestions] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [userAnswers, setUserAnswers] = useState([]);
+            const [showQuestionGrid, setShowQuestionGrid] = useState(false);
+            const [isReviewMode, setIsReviewMode] = useState(false);
+
+            const handleStart = (name) => { setUserName(name); startNewGame(QUIZ_DATA); };
+            const startNewGame = (questions) => { setActiveQuestions(questions); setCurrentIndex(0); setUserAnswers([]); setIsReviewMode(false); setGameState(GameState.PLAYING); setShowQuestionGrid(false); };
+            const handleAnswer = (response) => {
+                const q = activeQuestions[currentIndex];
+                const normalize = (s) => s.replace(/[.,!?;:'"]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+                const isCorrect = normalize(response) === normalize(q.correctAnswer);
+                setUserAnswers(prev => [...prev.filter(a => a.questionId !== q.id), { questionId: q.id, userResponse: response, isCorrect }]);
+            };
+            const handleNext = () => { if (currentIndex < activeQuestions.length - 1) { setCurrentIndex(prev => prev + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } };
+            const handlePrev = () => { if (currentIndex > 0) { setCurrentIndex(prev => prev - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } };
+            const handleSkip = () => handleNext();
+            const handleJumpToQuestion = (index) => { setCurrentIndex(index); setShowQuestionGrid(false); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+            const handleFinish = () => {
+                const unansweredCount = activeQuestions.length - userAnswers.length;
+                if (unansweredCount > 0) { if (!confirm(`Bạn còn ${unansweredCount} câu chưa hoàn thành. Bạn có chắc chắn muốn nộp bài không?`)) return; }
+                setGameState(GameState.FINISHED); window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            const handleRetryAll = () => startNewGame(QUIZ_DATA);
+            const handleRetryWrong = () => {
+                const wrongIds = userAnswers.filter(a => !a.isCorrect).map(a => a.questionId);
+                const wrongQuestions = QUIZ_DATA.filter(q => wrongIds.includes(q.id));
+                if (wrongQuestions.length > 0) startNewGame(wrongQuestions);
+            };
+            const handleReviewWrong = () => {
+                const wrongIds = userAnswers.filter(a => !a.isCorrect).map(a => a.questionId);
+                const wrongQuestions = QUIZ_DATA.filter(q => wrongIds.includes(q.id));
+                if (wrongQuestions.length > 0) { setActiveQuestions(wrongQuestions); setCurrentIndex(0); setIsReviewMode(true); setGameState(GameState.PLAYING); setShowQuestionGrid(false); }
+            };
+
+            if (gameState === GameState.START) return <StartScreen onStart={handleStart} />;
+            if (gameState === GameState.FINISHED) return <ResultScreen userName={userName} userAnswers={userAnswers} onRetryAll={handleRetryAll} onRetryWrong={handleRetryWrong} onReviewWrong={handleReviewWrong} />;
+
+            const currentQ = activeQuestions[currentIndex];
+            const answer = userAnswers.find(a => a.questionId === currentQ.id);
+            const isAnswered = !!answer;
+            const isLast = currentIndex === activeQuestions.length - 1;
+            const getQuestionStatus = (qId) => {
+                if (currentQ.id === qId) return 'current';
+                const ans = userAnswers.find(a => a.questionId === qId);
+                if (ans) return ans.isCorrect ? 'correct' : 'incorrect';
+                return 'unanswered';
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-100 flex flex-col items-center py-8 px-4 pb-32">
+                    <div className="w-full max-w-4xl flex justify-between items-center mb-8 bg-white px-4 sm:px-6 py-4 rounded-2xl shadow-sm border border-slate-200 sticky top-4 z-20">
+                        <div className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600 shrink-0">{userName.charAt(0).toUpperCase()}</div><div className="hidden sm:block font-bold text-slate-700 truncate max-w-[150px]">{userName}</div></div>
+                        <div className="flex items-center gap-2 sm:gap-4">
+                            {isReviewMode && <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase">Chế độ xem lại</span>}
+                            <button onClick={() => setShowQuestionGrid(true)} className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg transition-colors text-slate-700 font-bold text-sm"><Icons.LayoutGrid className="w-4 h-4" /><span className="hidden sm:inline">Danh sách câu hỏi</span><span className="inline sm:hidden">{currentIndex + 1}/{activeQuestions.length}</span></button>
+                            <div className="hidden sm:flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-lg"><span className="text-slate-500 text-sm font-bold uppercase tracking-wider">Câu</span><span className="font-black text-blue-600 text-lg">{currentIndex + 1}</span><span className="text-slate-400">/</span><span className="font-bold text-slate-500">{activeQuestions.length}</span></div>
+                        </div>
+                    </div>
+                    <QuestionCard question={currentQ} onAnswer={handleAnswer} isAnswered={isAnswered || isReviewMode} userAnswer={answer?.userResponse} isReviewMode={isReviewMode} />
+                    {showQuestionGrid && (
+                        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+                            <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
+                                <div className="p-4 border-b flex justify-between items-center"><h3 className="font-bold text-lg text-slate-800">Danh sách câu hỏi</h3><button onClick={() => setShowQuestionGrid(false)} className="p-2 hover:bg-slate-100 rounded-full"><Icons.X className="w-5 h-5" /></button></div>
+                                <div className="p-4 overflow-y-auto grid grid-cols-5 sm:grid-cols-8 gap-2">
+                                    {activeQuestions.map((q, idx) => {
+                                        const status = getQuestionStatus(q.id);
+                                        let bgClass = "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200";
+                                        if (status === 'current') bgClass = "bg-blue-600 text-white border-blue-600 ring-2 ring-blue-300";
+                                        else if (status === 'correct') bgClass = "bg-green-100 text-green-700 border-green-300";
+                                        else if (status === 'incorrect') bgClass = "bg-red-100 text-red-700 border-red-300";
+                                        else if (status === 'unanswered') bgClass = "bg-white text-slate-700 border-slate-300 border-dashed";
+                                        return <button key={q.id} onClick={() => handleJumpToQuestion(idx)} className={`h-10 rounded-lg font-bold text-sm border ${bgClass} transition-all`}>{idx + 1}</button>;
+                                    })}
+                                </div>
+                                <div className="p-4 border-t bg-slate-50 rounded-b-2xl text-xs flex gap-4 text-slate-600 font-medium">
+                                    <div className="flex items-center gap-1"><div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div> Đúng</div>
+                                    <div className="flex items-center gap-1"><div className="w-3 h-3 bg-red-100 border border-red-300 rounded"></div> Sai</div>
+                                    <div className="flex items-center gap-1"><div className="w-3 h-3 bg-white border border-slate-300 border-dashed rounded"></div> Chưa làm</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20">
+                        <div className="w-full max-w-4xl mx-auto flex justify-between gap-3">
+                            <Button onClick={handlePrev} variant="outline" disabled={currentIndex === 0} className="flex items-center px-4"><Icons.ArrowLeft className="w-4 h-4 sm:mr-2" /> <span className="hidden sm:inline">Trước</span></Button>
+                            <div className="flex gap-3">
+                                {isAnswered || isReviewMode ? (!isLast ? <Button onClick={handleNext} className="flex items-center shadow-blue-500/30">Câu tiếp theo <Icons.ArrowRight className="w-4 h-4 ml-2" /></Button> : <Button onClick={handleFinish} variant="secondary" className="flex items-center shadow-emerald-500/30">{isReviewMode ? 'Kết thúc xem lại' : 'Nộp bài'} <Icons.CheckSquare className="w-4 h-4 ml-2" /></Button>) : <Button variant="outline" onClick={handleSkip} className="text-slate-500 hover:text-slate-700 border-dashed hover:border-slate-400">Bỏ qua <Icons.Flag className="w-4 h-4 ml-2" /></Button>}
+                            </div>
+                            {isAnswered && !isLast && <div className="hidden sm:block w-[1px]"></div>}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
