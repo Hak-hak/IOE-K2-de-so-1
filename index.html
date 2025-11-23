@@ -89,21 +89,6 @@
             FINISHED: 'FINISHED'
         };
 
-        const cleanUrl = (url) => {
-            if (!url) return undefined;
-            return url.trim()
-                .replace(/\s+/g, '')
-                .replace(/res\.ioe\.vnzedu/, 'res.ioe.vn/edu')
-                .replace(/res\.ioe\.vii/, 'res.ioe.vn')
-                .replace(/res\.ioe\.vm/, 'res.ioe.vn')
-                .replace(/Audio\s*mp3/i, 'Audio.mp3')
-                .replace(/ImageExam\s*(\d)/, 'ImageExam/$1')
-                .replace(/Olympic\s*ExamData/, 'OlympicExamData')
-                .replace(/EOlympic\s*ExamData/, 'EOlympic/ExamData')
-                .replace(/'/g, '')
-                .replace(/Audio-mp3/i, 'Audio.mp3');
-        };
-
         // DỮ LIỆU CÂU HỎI LỚP 2
         const QUIZ_DATA = [
             // --- PART 1: GREETINGS & INTRO (1-10) ---
@@ -202,29 +187,29 @@
             { id: 79, type: QuestionType.FILL_IN_BLANK, questionText: "Boa_", correctAnswer: "t", explanation: "Boat: Thuyền." },
             { id: 80, type: QuestionType.MULTIPLE_CHOICE, questionText: "I like my ___ bear.", options: ["teddy", "ready", "tidy", "ten"], correctAnswer: "teddy", explanation: "Teddy bear: Gấu bông." },
 
-            // --- PART 9: SENTENCE ARRANGEMENT (81-90) ---
-            { id: 81, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["is", "What", "this?"], correctAnswer: "What is this?", explanation: "Đây là cái gì?" },
-            { id: 82, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["a", "It", "pen.", "is"], correctAnswer: "It is a pen.", explanation: "Nó là một cái bút." },
-            { id: 83, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["a", "Is", "it", "cat?"], correctAnswer: "Is it a cat?", explanation: "Nó có phải là con mèo không?" },
-            { id: 84, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["it", "Yes,", "is."], correctAnswer: "Yes, it is.", explanation: "Vâng, đúng vậy." },
-            { id: 85, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["isn't.", "No,", "it"], correctAnswer: "No, it isn't.", explanation: "Không, không phải." },
-            { id: 86, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["like", "dogs.", "I"], correctAnswer: "I like dogs.", explanation: "Tôi thích chó." },
-            { id: 87, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["have", "I", "ball.", "a"], correctAnswer: "I have a ball.", explanation: "Tôi có một quả bóng." },
-            { id: 88, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["nose.", "Touch", "your"], correctAnswer: "Touch your nose.", explanation: "Chạm vào mũi của bạn." },
-            { id: 89, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["your", "Open", "book."], correctAnswer: "Open your book.", explanation: "Mở sách ra." },
-            { id: 90, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["up.", "Stand"], correctAnswer: "Stand up.", explanation: "Đứng dậy." },
+            // --- PART 9: LISTENING - NUMBERS & COLORS (81-90) ---
+            { id: 81, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen and choose the correct number.", audioScript: "Number Three", options: ["Five", "Three", "Ten", "One"], correctAnswer: "Three", explanation: "Bạn nghe thấy: 'Number Three' (Số 3)." },
+            { id: 82, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen and choose the correct color.", audioScript: "The color is Blue", options: ["Green", "Red", "Blue", "Black"], correctAnswer: "Blue", explanation: "Bạn nghe thấy: 'The color is Blue' (Màu xanh dương)." },
+            { id: 83, type: QuestionType.FILL_IN_BLANK, questionText: "Listen and write the number: O_e.", audioScript: "Number One", correctAnswer: "n", explanation: "Bạn nghe thấy: 'Number One' (Số 1)." },
+            { id: 84, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: What is this?", audioScript: "This is a Pencil", options: ["Pen", "Pencil", "Book", "Bag"], correctAnswer: "Pencil", explanation: "Bạn nghe thấy: 'This is a Pencil' (Đây là bút chì)." },
+            { id: 85, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: How are you?", audioScript: "I am fine", options: ["I'm fine", "I'm five", "I'm nine", "I'm nice"], correctAnswer: "I'm fine", explanation: "Bạn nghe thấy: 'I am fine' (Tôi khỏe)." },
+            { id: 86, type: QuestionType.FILL_IN_BLANK, questionText: "Listen and complete: Hel_o.", audioScript: "Hello", correctAnswer: "l", explanation: "Bạn nghe thấy: 'Hello' (Xin chào)." },
+            { id: 87, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: Is it a dog?", audioScript: "Meow Meow. No, it isn't. It is a cat.", options: ["Yes, it is", "No, it isn't"], correctAnswer: "No, it isn't", explanation: "Bạn nghe thấy tiếng mèo kêu và câu 'No, it isn't'." },
+            { id: 88, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: What animal is it?", audioScript: "It is a Bird", options: ["Dog", "Cat", "Bird", "Duck"], correctAnswer: "Bird", explanation: "Bạn nghe thấy: 'It is a Bird' (Nó là con chim)." },
+            { id: 89, type: QuestionType.FILL_IN_BLANK, questionText: "Listen: Stand _ _.", audioScript: "Stand up", correctAnswer: "up", explanation: "Bạn nghe thấy: 'Stand up' (Đứng dậy)." },
+            { id: 90, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen and choose.", audioScript: "Open your book", options: ["Open your book", "Close your book", "Sit down", "Stand up"], correctAnswer: "Open your book", explanation: "Bạn nghe thấy: 'Open your book' (Mở sách ra)." },
 
-            // --- PART 10: MIXED REVIEW (91-100) ---
-            { id: 91, type: QuestionType.MULTIPLE_CHOICE, questionText: "Choose the odd one out (Chọn từ khác loại):", options: ["Red", "Blue", "Cat", "Green"], correctAnswer: "Cat", explanation: "Cat là con vật, còn lại là màu sắc." },
-            { id: 92, type: QuestionType.MULTIPLE_CHOICE, questionText: "Choose the odd one out:", options: ["One", "Two", "Ten", "Ball"], correctAnswer: "Ball", explanation: "Ball là đồ chơi, còn lại là số đếm." },
-            { id: 93, type: QuestionType.FILL_IN_BLANK, questionText: "Sch_ol", correctAnswer: "o", explanation: "School: Trường học." },
-            { id: 94, type: QuestionType.FILL_IN_BLANK, questionText: "Fri_nd", correctAnswer: "e", explanation: "Friend: Bạn bè." },
-            { id: 95, type: QuestionType.MULTIPLE_CHOICE, questionText: "One + One = ___.", options: ["Two", "Three", "Four", "Five"], correctAnswer: "Two", explanation: "1 + 1 = 2 (Two)." },
-            { id: 96, type: QuestionType.FILL_IN_BLANK, questionText: "Hap_y", correctAnswer: "p", explanation: "Happy: Vui vẻ." },
-            { id: 97, type: QuestionType.MULTIPLE_CHOICE, questionText: "Apple is ___.", options: ["red", "blue", "black", "white"], correctAnswer: "red", explanation: "Red: Quả táo thường màu đỏ." },
-            { id: 98, type: QuestionType.FILL_IN_BLANK, questionText: "S_d", correctAnswer: "a", explanation: "Sad: Buồn bã." },
-            { id: 99, type: QuestionType.FILL_IN_BLANK, questionText: "Tha_k you.", correctAnswer: "n", explanation: "Thank you: Cảm ơn." },
-            { id: 100, type: QuestionType.REARRANGE, questionText: "Sắp xếp câu:", rearrangeParts: ["soon.", "See", "you"], correctAnswer: "See you soon.", explanation: "Hẹn gặp lại sớm." }
+            // --- PART 10: LISTENING - REVIEW (91-100) ---
+            { id: 91, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: Who is she?", audioScript: "She is my Teacher", options: ["Mother", "Sister", "Teacher", "Friend"], correctAnswer: "Teacher", explanation: "Bạn nghe thấy: 'She is my Teacher' (Cô ấy là giáo viên của tôi)." },
+            { id: 92, type: QuestionType.FILL_IN_BLANK, questionText: "Listen: Goodb_e.", audioScript: "Goodbye", correctAnswer: "y", explanation: "Bạn nghe thấy: 'Goodbye' (Tạm biệt)." },
+            { id: 93, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: What is this?", audioScript: "It is a Robot", options: ["Ruler", "Rubber", "Robot", "Red"], correctAnswer: "Robot", explanation: "Bạn nghe thấy: 'It is a Robot' (Nó là người máy)." },
+            { id: 94, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: Touch your...", audioScript: "Touch your Nose", options: ["Nose", "Eye", "Ear", "Head"], correctAnswer: "Nose", explanation: "Bạn nghe thấy: 'Touch your Nose' (Chạm vào mũi)." },
+            { id: 95, type: QuestionType.FILL_IN_BLANK, questionText: "Listen: Than_ you.", audioScript: "Thank you", correctAnswer: "k", explanation: "Bạn nghe thấy: 'Thank you' (Cảm ơn)." },
+            { id: 96, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: Is it big?", audioScript: "Yes, it is big", options: ["Yes, it is", "No, it isn't"], correctAnswer: "Yes, it is", explanation: "Bạn nghe thấy: 'Yes, it is big' (Có, nó to)." },
+            { id: 97, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: What colour is the bag?", audioScript: "The bag is Yellow", options: ["Yellow", "Red", "Green", "Blue"], correctAnswer: "Yellow", explanation: "Bạn nghe thấy: 'The bag is Yellow' (Cái cặp màu vàng)." },
+            { id: 98, type: QuestionType.FILL_IN_BLANK, questionText: "Listen: Si_ down.", audioScript: "Sit down", correctAnswer: "t", explanation: "Bạn nghe thấy: 'Sit down' (Ngồi xuống)." },
+            { id: 99, type: QuestionType.MULTIPLE_CHOICE, questionText: "Listen: How many books?", audioScript: "One, Two. Two books.", options: ["One", "Two", "Three", "Four"], correctAnswer: "Two", explanation: "Bạn nghe thấy đếm 'One, Two' (2 quyển sách)." },
+            { id: 100, type: QuestionType.FILL_IN_BLANK, questionText: "Listen: B_e.", audioScript: "Bye bye", correctAnswer: "y", explanation: "Bạn nghe thấy: 'Bye bye' (Tạm biệt)." }
         ];
 
         // --- 3. HELPER UTILS ---
@@ -254,28 +239,73 @@
             );
         };
 
-        const AudioPlayer = ({ src }) => {
+        const AudioPlayer = ({ src, script }) => {
             const audioRef = useRef(null);
             const [isPlaying, setIsPlaying] = useState(false);
 
+            useEffect(() => {
+                // Stop audio/speech when component unmounts or props change
+                return () => {
+                    if (audioRef.current) audioRef.current.pause();
+                    window.speechSynthesis.cancel();
+                };
+            }, [src, script]);
+
             const togglePlay = () => {
-                if (audioRef.current) {
-                    if (isPlaying) audioRef.current.pause();
-                    else audioRef.current.play();
+                if (script) {
+                    if (isPlaying) {
+                        window.speechSynthesis.cancel();
+                        setIsPlaying(false);
+                    } else {
+                        window.speechSynthesis.cancel(); // Safety clear
+                        const utterance = new SpeechSynthesisUtterance(script);
+                        utterance.lang = 'en-US'; // Set English US accent
+                        utterance.rate = 0.8; // Slightly slower for easier listening
+                        utterance.onend = () => setIsPlaying(false);
+                        utterance.onerror = () => setIsPlaying(false);
+                        window.speechSynthesis.speak(utterance);
+                        setIsPlaying(true);
+                    }
+                } else if (src && audioRef.current) {
+                    if (isPlaying) {
+                        audioRef.current.pause();
+                    } else {
+                        audioRef.current.play();
+                    }
                     setIsPlaying(!isPlaying);
                 }
             };
 
+            const handleEnded = () => {
+                setIsPlaying(false);
+            };
+
+            if (!src && !script) return null;
+
             return (
                 <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow w-full max-w-md">
-                    <button type="button" onClick={togglePlay} className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-blue-200">
+                    <button 
+                        type="button" 
+                        onClick={togglePlay}
+                        className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-blue-200"
+                        aria-label={isPlaying ? "Dừng" : "Phát"}
+                    >
                         {isPlaying ? <Icons.Pause className="w-5 h-5" /> : <Icons.Play className="w-5 h-5 ml-1" />}
                     </button>
                     <div className="flex flex-col">
                         <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-0.5">Câu hỏi Audio</span>
-                        <span className="text-sm text-slate-500 flex items-center gap-1"><Icons.Volume2 className="w-4 h-4" /> Nhấn để nghe</span>
+                        <span className="text-sm text-slate-500 flex items-center gap-1">
+                            <Icons.Volume2 className="w-4 h-4" /> {script ? "Nghe đọc (AI)" : "Nhấn để nghe"}
+                        </span>
                     </div>
-                    <audio ref={audioRef} src={src} onEnded={() => setIsPlaying(false)} className="hidden" />
+                    {src && !script && (
+                        <audio 
+                            ref={audioRef} 
+                            src={src} 
+                            onEnded={handleEnded} 
+                            className="hidden" 
+                        />
+                    )}
                 </div>
             );
         };
@@ -381,7 +411,7 @@
                         <div className="p-6 sm:p-10">
                             <div className="mb-6 space-y-6">
                                 {question.imageUrl && <div className="flex justify-center bg-slate-50 rounded-2xl p-4 border border-slate-100"><img src={question.imageUrl} className="max-h-72 rounded-lg shadow-sm object-contain" onError={(e) => e.target.style.display = 'none'} /></div>}
-                                {question.audioUrl && <div className="flex justify-center"><AudioPlayer src={question.audioUrl} /></div>}
+                                {(question.audioUrl || question.audioScript) && <div className="flex justify-center"><AudioPlayer src={question.audioUrl} script={question.audioScript} /></div>}
                             </div>
                             <div className="mb-8">
                                 <div className="flex justify-between items-start gap-4">

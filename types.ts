@@ -19,6 +19,7 @@ export interface Question {
   options?: string[];
   rearrangeParts?: string[];
   audioUrl?: string;
+  audioScript?: string;
   imageUrl?: string;
 }
 

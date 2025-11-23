@@ -1,16 +1,39 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Volume2, Play, Pause } from 'lucide-react';
 
 interface AudioPlayerProps {
-  src: string;
+  src?: string;
+  script?: string;
 }
 
-export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
+export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, script }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  useEffect(() => {
+    // Stop audio/speech when component unmounts or props change
+    return () => {
+      if (audioRef.current) audioRef.current.pause();
+      window.speechSynthesis.cancel();
+    };
+  }, [src, script]);
+
   const togglePlay = () => {
-    if (audioRef.current) {
+    if (script) {
+      if (isPlaying) {
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+      } else {
+        window.speechSynthesis.cancel(); // Safety clear
+        const utterance = new SpeechSynthesisUtterance(script);
+        utterance.lang = 'en-US'; // Set English US accent
+        utterance.rate = 0.8; // Slightly slower for easier listening
+        utterance.onend = () => setIsPlaying(false);
+        utterance.onerror = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+      }
+    } else if (src && audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
@@ -23,6 +46,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
   const handleEnded = () => {
     setIsPlaying(false);
   };
+
+  if (!src && !script) return null;
 
   return (
     <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow w-full max-w-md">
@@ -37,15 +62,17 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
       <div className="flex flex-col">
         <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-0.5">Câu hỏi Audio</span>
         <span className="text-sm text-slate-500 flex items-center gap-1">
-          <Volume2 className="w-4 h-4" /> Nhấn để nghe
+          <Volume2 className="w-4 h-4" /> {script ? "Nghe đọc (AI)" : "Nhấn để nghe"}
         </span>
       </div>
-      <audio 
-        ref={audioRef} 
-        src={src} 
-        onEnded={handleEnded} 
-        className="hidden" 
-      />
+      {src && !script && (
+        <audio 
+          ref={audioRef} 
+          src={src} 
+          onEnded={handleEnded} 
+          className="hidden" 
+        />
+      )}
     </div>
   );
 };

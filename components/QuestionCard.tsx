@@ -83,9 +83,9 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer, 
                 />
               </div>
             )}
-            {question.audioUrl && (
+            {(question.audioUrl || question.audioScript) && (
               <div className="flex justify-center">
-                <AudioPlayer src={question.audioUrl} />
+                <AudioPlayer src={question.audioUrl} script={question.audioScript} />
               </div>
             )}
           </div>
